@@ -46,4 +46,22 @@ class MessageExtractorTest {
         assertEquals(1, links.size());
         assertEquals("https://www.youtube.com/watch?v=abcdef", links.getFirst());
     }
+
+    @Test
+    public void testExtractYouTubeShareLinks() {
+        String message = "Watch this! https://youtu.be/AkT-jsmbmbc?si=8PKQiGCZ1ojMSJtE";
+        List<String> links = messageExtractor.extractLinks(message);
+
+        assertEquals(1, links.size());
+        assertEquals("https://youtu.be/AkT-jsmbmbc?si=8PKQiGCZ1ojMSJtE", links.getFirst());
+    }
+
+    @Test
+    public void testExtractSpotifySharedLinks() {
+        String message = "Check out this song on Spotify: https://l.messenger.com/l.php?u=https%3A%2F%2Fopen.spotify.com%2Ftrack%2F6pTtDlxT35UY4qi8yzrJFM%3Fsi%3Ddab0bad787124c34&h=AT0V7TsE-iqaaqscrGA0wrlr_JL7exwytUEH8YNTddXE81OasgCcTDgVfxc4qgNFdhrBnCTcW-RIl1nVsdqFtkCfBB42xSqjgdJdjR_KrY8whR6ixwZPhIQUcJkCmHW3T0e91g";
+        List<String> links = messageExtractor.extractLinks(message);
+
+        assertEquals(1, links.size());
+        assertEquals("Check out this song on Spotify: https://l.messenger.com/l.php?u=https%3A%2F%2Fopen.spotify.com%2Ftrack%2F6pTtDlxT35UY4qi8yzrJFM%3Fsi%3Ddab0bad787124c34&h=AT0V7TsE-iqaaqscrGA0wrlr_JL7exwytUEH8YNTddXE81OasgCcTDgVfxc4qgNFdhrBnCTcW-RIl1nVsdqFtkCfBB42xSqjgdJdjR_KrY8whR6ixwZPhIQUcJkCmHW3T0e91g", links.getFirst());
+    }
 }

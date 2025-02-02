@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 class MessengerLinkParserTest {
+
     @Test
     void testExtractUrlFromMessengerLink() {
         // Given: a Messenger link with a valid Spotify URL in the 'u' parameter

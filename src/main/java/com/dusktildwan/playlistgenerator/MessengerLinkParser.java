@@ -3,13 +3,12 @@ package com.dusktildwan.playlistgenerator;
 import org.springframework.stereotype.Service;
 
 import java.net.URLDecoder;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 @Service
 public class MessengerLinkParser {
 
-    public static void main(String[] args) {
+    public static void parseMessengerUrl(String[] args) {
         String messengerLink = "https://l.messenger.com/l.php?u=https%3A%2F%2Fopen.spotify.com%2Ftrack%2F6pTtDlxT35UY4qi8yzrJFM%3Fsi%3Ddab0bad787124c34&h=AT0V7TsE-iqaaqscrGA0wrlr_JL7exwytUEH8YNTddXE81OasgCcTDgVfxc4qgNFdhrBnCTcW-RIl1nVsdqFtkCfBB42xSqjgdJdjR_KrY8whR6ixwZPhIQUcJkCmHW3T0e91g";
 
         // Extract the "u" parameter
