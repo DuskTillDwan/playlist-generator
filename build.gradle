@@ -24,17 +24,31 @@ repositories {
 }
 
 dependencies {
-//	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+ 	constraints {
+		implementation("org.apache.commons:commons-compress:1.26.0") //addresses CVE's from zonky.test
+	}
 	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'com.google.code.gson:gson:2.12.1'
     implementation 'org.postgresql:postgresql'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation ('io.zonky.test:embedded-database-spring-test:2.6.0') {
+		exclude group: 'org.apache.commons', module: 'commons-compress'
+	}
+
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+	test {
+		resources {
+			srcDirs "src/test/resources"
+		}
+	}
 }
 
 tasks.named('test') {
