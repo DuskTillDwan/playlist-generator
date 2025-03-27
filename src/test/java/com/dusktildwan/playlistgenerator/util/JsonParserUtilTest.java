@@ -30,15 +30,15 @@ class JsonParserUtilTest {
 
         // Assertions to verify the parsed data
         assertNotNull(facebookChat);
-        assertEquals(3, facebookChat.getParticipants().size());
-        assertEquals("Adam Savage", facebookChat.getParticipants().getFirst().name());
-        assertEquals("Halo Infinite", facebookChat.getParticipants().get(1).name());
-        assertEquals("Larry Chapman", facebookChat.getParticipants().get(2).name());
+        assertEquals(3, facebookChat.participants().size());
+        assertEquals("Adam Savage", facebookChat.participants().getFirst().name());
+        assertEquals("Halo Infinite", facebookChat.participants().get(1).name());
+        assertEquals("Larry Chapman", facebookChat.participants().get(2).name());
 
-        assertEquals(2, facebookChat.getMessages().size());
-        assertEquals("Halo Infinite", facebookChat.getMessages().getFirst().getSenderName());
+        assertEquals(2, facebookChat.messages().size());
+        assertEquals("Halo Infinite", facebookChat.messages().getFirst().senderName());
         assertEquals("https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt?si=9UoPAaOXSAOlVUbZrlkMEA&context=spotify%3Aalbum%3A0SzoksypeognxYJJOJEYip",
-                facebookChat.getMessages().getFirst().getShare().link());
+                facebookChat.messages().getFirst().share().link());
     }
 
     @Test
