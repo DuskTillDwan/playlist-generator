@@ -1,0 +1,37 @@
+{
+  "participants": [
+    {
+      "name": "Adam Savage"
+    },
+    {
+      "name": "Halo Infinite"
+    },
+    {
+      "name": "Larry Chapman"
+    }
+  ],
+  "messages": [
+    {
+      "sender_name": "Halo Infinite",
+      "timestamp_ms": 1740223403518,
+      "content": "https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt?si=9UoPAaOXSAOlVUbZrlkMEA&context=spotify%3Aalbum%3A0SzoksypeognxYJJOJEYip",
+      "share": {
+        "link": "https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt?si=9UoPAaOXSAOlVUbZrlkMEA&context=spotify%3Aalbum%3A0SzoksypeognxYJJOJEYip",
+        "share_text": "Leon Thomas \u00c2\u00b7 MUTT \u00c2\u00b7 Song \u00c2\u00b7 2024"
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Adam Savage",
+      "timestamp_ms": 1740198266864,
+      "content": "https://youtu.be/UUxheK7soS4",
+      "share": {
+        "link": "https://www.youtube.com/watch?v=UUxheK7soS4",
+        "share_text": "Provided to YouTube by Absolute Label ServicesEaten By The Monster Of Love \u00c2\u00b7 SparksAngst In My Pants\u00e2\u0084\u0097 1982 Sparks/Giorgio Moroder EnterprisesReleased on: 198..."
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    }
+  ]
+}

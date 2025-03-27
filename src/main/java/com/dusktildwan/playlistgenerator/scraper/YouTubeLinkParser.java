@@ -1,4 +1,4 @@
-package com.dusktildwan.playlistgenerator;
+package com.dusktildwan.playlistgenerator.scraper;
 
 import org.springframework.stereotype.Service;
 
