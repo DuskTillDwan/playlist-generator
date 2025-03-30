@@ -6,11 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureEmbeddedDatabase
@@ -20,12 +21,15 @@ class ChatMemberRepositoryTest {
     @Autowired
     ChatMemberRepository chatMemberRepository;
 
+    @Autowired
+    TestEntityManager testEntityManager;
+
     ChatMember chatMember;
 
 
     @BeforeEach
     void createChatMember(){
-         chatMember = ChatMember.builder()
+        chatMember = ChatMember.builder()
                 .facebookId("someid")
                 .name("Adam Savage")
                 .build();
@@ -35,20 +39,17 @@ class ChatMemberRepositoryTest {
     void chatMemberRepository_savesUser(){
         ChatMember savedMember = chatMemberRepository.save(chatMember);
 
-        assertEquals(1L, savedMember.getId());
-        assertEquals("Adam Savage", savedMember.getName());
-        assertEquals("someid", savedMember.getFacebookId());
+        assertThat(testEntityManager.find(ChatMember.class, savedMember.getId())).isEqualTo(chatMember);
     }
 
     @Test
     void chatMemberRepository_saveAndFindUserById(){
-        chatMemberRepository.save(chatMember);
+        ChatMember savedMember = chatMemberRepository.save(chatMember);
+
+        testEntityManager.persist(savedMember);
 
         Optional<ChatMember> foundMember = chatMemberRepository.findById(1L);
 
-        assertTrue(foundMember.isPresent());
-        assertEquals(1L, foundMember.get().getId());
-        assertEquals("Adam Savage", foundMember.get().getName());
-        assertEquals("someid", foundMember.get().getFacebookId());
+        assertThat(foundMember).contains(savedMember);
     }
 }
