@@ -2,6 +2,7 @@ package com.dusktildwan.playlistgenerator.DAL.repositories.users;
 
 import com.dusktildwan.playlistgenerator.DAL.entities.users.ChatMember;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,9 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DataJpaTest
 @AutoConfigureEmbeddedDatabase
-@Sql("classpath:scripts/test-db.sql")
+@Sql("/scripts/test-db.sql")
 class ChatMemberRepositoryTest {
 
     @Autowired
@@ -39,7 +38,7 @@ class ChatMemberRepositoryTest {
     void chatMemberRepository_savesUser(){
         ChatMember savedMember = chatMemberRepository.save(chatMember);
 
-        assertThat(testEntityManager.find(ChatMember.class, savedMember.getId())).isEqualTo(chatMember);
+        Assertions.assertThat(testEntityManager.find(ChatMember.class, savedMember.getId())).isEqualTo(chatMember);
     }
 
     @Test
@@ -50,6 +49,6 @@ class ChatMemberRepositoryTest {
 
         Optional<ChatMember> foundMember = chatMemberRepository.findById(1L);
 
-        assertThat(foundMember).contains(savedMember);
+        Assertions.assertThat(foundMember).contains(savedMember);
     }
 }

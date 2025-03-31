@@ -4,6 +4,8 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
+apply from : './gradle/integration.gradle'
+
 group = 'com.dusktildwan'
 version = '0.0.1-SNAPSHOT'
 
@@ -24,9 +26,6 @@ repositories {
 }
 
 dependencies {
- 	constraints {
-		implementation("org.apache.commons:commons-compress:1.26.0") //addresses CVE's from zonky.test
-	}
 	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'com.google.code.gson:gson:2.12.1'
@@ -43,14 +42,10 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-sourceSets {
-	test {
-		resources {
-			srcDirs "src/test/resources"
-		}
-	}
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+
+check.dependsOn integrationTest
