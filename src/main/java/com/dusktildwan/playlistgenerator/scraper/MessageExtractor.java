@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 @Service
 public class MessageExtractor {
 
-        public List<String> extractLinks(String text) {
+         public static List<String> extractLinks(String text) {
         List<String> links = new ArrayList<>();
         Pattern pattern = Pattern.compile("(https?://[\\w./?v=-]+)");
         Matcher matcher = pattern.matcher(text);

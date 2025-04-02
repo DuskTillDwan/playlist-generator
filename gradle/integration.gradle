@@ -1,0 +1,43 @@
+sourceSets {
+    integrationTest {
+        java {
+            srcDir 'src/integration/java'  // Your custom integration tests directory
+        }
+        resources {
+            srcDir 'src/integration/resources'  // Add this to include resources from integration directory
+        }
+
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom runtimeOnly
+}
+
+dependencies {
+    constraints {
+        implementation("org.apache.commons:commons-compress:1.26.0") //addresses CVE's from zonky.test
+    }
+    integrationTestImplementation ('io.zonky.test:embedded-database-spring-test:2.6.0') {
+        exclude group: 'org.apache.commons', module: 'commons-compress'
+    }
+    integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    integrationTestRuntime 'org.junit.platform:junit-platform-launcher'
+}
+
+
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+
+    shouldRunAfter test
+
+    useJUnitPlatform()
+}
