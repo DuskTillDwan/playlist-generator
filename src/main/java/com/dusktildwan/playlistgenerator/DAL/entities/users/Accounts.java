@@ -9,15 +9,13 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "chat_members", schema = "users")
-public class ChatMember {
+@Table(name = "logins", schema = "users")
+public class Accounts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column
     private String name;
 
     @Column(name = "facebook_id")
