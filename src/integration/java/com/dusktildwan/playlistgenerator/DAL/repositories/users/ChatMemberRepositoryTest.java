@@ -51,4 +51,15 @@ class ChatMemberRepositoryTest {
 
         Assertions.assertThat(foundMember).contains(savedMember);
     }
+
+    @Test
+    void chatMemberRepository_findByName(){
+        ChatMember savedMember = chatMemberRepository.save(chatMember);
+
+        testEntityManager.persist(savedMember);
+
+        Optional<ChatMember> foundMember = chatMemberRepository.findByName("Adam Savage");
+
+        Assertions.assertThat(foundMember).contains(savedMember);
+    }
 }

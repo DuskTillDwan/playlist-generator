@@ -16,15 +16,15 @@ class JsonParserUtilTest {
 
     @Test
     void parseFacebookChat_parsesMultipartFile() throws IOException {
-    Path path = Paths.get("src/test/java/resources/test_chat.json");
-    byte[] jsonBytes = Files.readAllBytes(path);
+        Path path = Paths.get("src/test/java/resources/test_chat.json");
+        byte[] jsonBytes = Files.readAllBytes(path);
 
-    MockMultipartFile mockFile = new MockMultipartFile(
-            "file",
-            "test_chat.json",
-            "application/json",
-            jsonBytes
-    );
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "file",
+                "test_chat.json",
+                "application/json",
+                jsonBytes
+        );
         // Parse the JSON file using JsonParserUtil
         FacebookChat facebookChat = JsonParserUtil.parseFacebookChat(mockFile);
 
@@ -37,6 +37,7 @@ class JsonParserUtilTest {
 
         assertEquals(2, facebookChat.messages().size());
         assertEquals("Halo Infinite", facebookChat.messages().getFirst().senderName());
+        assertEquals(1740223403518L, facebookChat.messages().getFirst().timestampMS());
         assertEquals("https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt?si=9UoPAaOXSAOlVUbZrlkMEA&context=spotify%3Aalbum%3A0SzoksypeognxYJJOJEYip",
                 facebookChat.messages().getFirst().share().link());
     }
