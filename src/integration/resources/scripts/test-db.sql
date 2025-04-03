@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users.logins (
 CREATE TABLE music.song (
     id SERIAL PRIMARY KEY,
     platform_id INT REFERENCES music.platforms(id),
-    title TEXT NOT NULL,
+    title TEXT,
     url TEXT NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -40,6 +40,12 @@ CREATE TABLE IF NOT EXISTS music.song_shares (
     song_id INT REFERENCES music.song(id),
     shared_at TIMESTAMP NOT NULL
 );
+
+ALTER TABLE IF EXISTS music.song_shares
+    ADD CONSTRAINT share_already_processed UNIQUE (user_id, song_id, shared_at);
+
+COMMENT ON CONSTRAINT share_already_processed ON music.song_shares
+    IS 'this means a message has already been processed, and this shared song is accounted for already.';
 
 CREATE TABLE music.playlists (
     id SERIAL PRIMARY KEY,

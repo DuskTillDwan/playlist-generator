@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "song_shares", schema = "music")
+@Table(name = "song_shares",
+        schema = "music",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"song_id", "user_id", "shared_at"}))
 public class SongShares {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

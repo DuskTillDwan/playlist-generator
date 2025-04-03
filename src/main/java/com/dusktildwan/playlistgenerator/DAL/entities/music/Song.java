@@ -26,10 +26,10 @@ public class Song {
     @Column
     private String title;
 
-    @Column
+    @Column(nullable = false)
     private String url;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
 }
