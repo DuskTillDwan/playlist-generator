@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.Instant;
@@ -18,11 +20,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
 class SongSharesServiceTest {
 
     @Mock
@@ -60,11 +61,16 @@ class SongSharesServiceTest {
     }
 
     @Test
-    void saveSharedSongToDatabase_ExceptionThrownOnRepeatShare() {
+    void saveSharedSongToDatabase_ExceptionThrownOnRepeatShare(CapturedOutput capturedOutput) {
         when(chatMemberService.getChatMemberBySenderName(any())).thenReturn(chatMember);
-        when(songSharesRepository.save(any())).thenThrow(DataIntegrityViolationException.class);
 
-        assertThatThrownBy(() -> songSharesService.saveSharedSongToDatabase(song, message))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        doThrow(DataIntegrityViolationException.class).when(songSharesRepository).save(any(SongShares.class));
+
+        SongShares actualSongShare = songSharesService.saveSharedSongToDatabase(song, message);
+
+        verify(songSharesRepository, times(1)).save(any());
+        assertThat(actualSongShare).isNull();
+        assertThat(capturedOutput.getOut()).contains("Message has already been processed:");
     }
+
 }
