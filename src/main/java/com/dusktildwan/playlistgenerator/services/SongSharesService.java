@@ -35,7 +35,7 @@ public class SongSharesService {
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             //swallow exception
             log.error("Message has already been processed: USER: {}, shared_at: {}, link: {}",
-                    message.senderName(), message.timestampMS(), message.share().link());
+                    message.senderName(), message.timestampMS(), message.share().link(), e);
         }
         return null;
     }
