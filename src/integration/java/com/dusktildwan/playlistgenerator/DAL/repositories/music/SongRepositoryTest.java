@@ -25,9 +25,6 @@
 
      @Test
      void savesSong_Successfully(){
-
-         songRepository.saveAndFlush(song);
-
          Song savedSong = songRepository.saveAndFlush(song);
 
          assertThat(savedSong).isEqualTo(song);
@@ -35,8 +32,6 @@
 
      @Test
      void savesSong_withNullUrl_throwsDataIntegrityViolation(){
-         songRepository.saveAndFlush(song);
-
          song.setUrl(null);
 
          assertThatThrownBy(() -> songRepository.saveAndFlush(song))

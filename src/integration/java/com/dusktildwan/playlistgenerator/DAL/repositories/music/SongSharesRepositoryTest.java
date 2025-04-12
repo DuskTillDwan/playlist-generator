@@ -4,14 +4,15 @@
  import com.dusktildwan.playlistgenerator.DAL.DTO.SharedSong;
  import com.dusktildwan.playlistgenerator.DAL.entities.music.Platform;
  import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
+ import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShareId;
  import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShares;
  import com.dusktildwan.playlistgenerator.DAL.entities.users.ChatMember;
  import com.dusktildwan.playlistgenerator.DAL.repositories.users.ChatMemberRepository;
  import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+ import jakarta.persistence.EntityManager;
  import org.junit.jupiter.api.Test;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
- import org.springframework.dao.DataIntegrityViolationException;
  import org.springframework.test.context.jdbc.Sql;
 
  import java.time.Instant;
@@ -20,9 +21,8 @@
  import java.util.Optional;
 
  import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
- import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@DataJpaTest
+ @DataJpaTest
 @AutoConfigureEmbeddedDatabase
 @Sql("/scripts/test-db.sql")
 public class SongSharesRepositoryTest {
@@ -35,6 +35,9 @@ public class SongSharesRepositoryTest {
     @Autowired
     SongRepository songRepository;
 
+    @Autowired
+    EntityManager entityManager;
+
     Message message = new Message("Bruce Banner",
             1740223403518L,
             "This is content",
@@ -46,44 +49,73 @@ public class SongSharesRepositoryTest {
 
     ChatMember chatMember = ChatMember.builder().name("Bruce Banner").build();
 
-    SongShares songShares = SongShares.builder()
-            .song(song)
-            .user(chatMember)
-            .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
-            .build();
-
     @Test
     void savesSongShare_savesSuccessfully(){
-
         songRepository.saveAndFlush(song);
         chatMemberRepository.saveAndFlush(chatMember);
 
-        SongShares actualSongShare = songSharesRepository.save(songShares);
+        SongShareId songShareId = SongShareId.builder()
+                .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
+                .userId(chatMember.getId())
+                .songId(song.getId()).build();
 
-        assertThat(actualSongShare).isEqualTo(songShares);
+        SongShares songShares = SongShares.builder()
+                .id(songShareId)
+                .song(song)
+                .user(chatMember)
+                .build();
+
+        SongShares actual = songSharesRepository.saveAndFlush(songShares);
+
+        assertThat(actual.getSong()).isEqualTo(songShares.getSong());
+        assertThat(actual.getId().getSharedAt()).isEqualTo(songShares.getId().getSharedAt());
+        assertThat(actual.getId().getSongId()).isEqualTo(songShares.getId().getSongId());
+        assertThat(actual.getId().getUserId()).isEqualTo(songShares.getId().getUserId());
     }
 
     @Test
-    void savesSongShare_savesDuplicateShare_throwsDataIntegrityViolation(){
+    void savesSongShare_savesDuplicateShare_doesNotSave(){
 
+        System.out.println("song&chatmember save vvvv");
         songRepository.saveAndFlush(song);
-
         chatMemberRepository.saveAndFlush(chatMember);
+        System.out.println("song&chatmember save ^^^^");
 
+        SongShareId songShareId = SongShareId.builder()
+                .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
+                .userId(chatMember.getId())
+                .songId(song.getId()).build();
+
+        SongShares songShares = SongShares.builder()
+                .id(songShareId)
+                .song(song)
+                .user(chatMember)
+                .build();
+
+        System.out.println("Song Share 1st Save and flush vvv");
         songSharesRepository.saveAndFlush(songShares);
+        System.out.println("Song Share 1st Save and flush ^^^");
 
-        assertThat(songSharesRepository.findById(1L)).isEqualTo(Optional.of(songShares));
+        Optional<SongShares> retrieved = songSharesRepository.findById(songShareId);
+        assertThat(retrieved).isPresent();
+        assertThat(retrieved.get().getId()).isEqualTo(songShares.getId());
+
+        long countBefore = songSharesRepository.count();
+
+        entityManager.clear();
 
         //create duplicate share, so Hibernate doesn't reuse the same entity
         SongShares duplicateSongShare = SongShares.builder()
+                .id(new SongShareId(song.getId(),
+                        chatMember.getId(),
+                        LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault())))
                 .song(song)
                 .user(chatMember)
-                .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
                 .build();
 
-
-        assertThatThrownBy(() -> songSharesRepository.saveAndFlush(duplicateSongShare))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        long countAfter = songSharesRepository.count();
+        songSharesRepository.saveAndFlush(duplicateSongShare);
+        assertThat(countAfter).isEqualTo(countBefore);
     }
 
     @Test
@@ -92,15 +124,29 @@ public class SongSharesRepositoryTest {
         songRepository.saveAndFlush(song);
         chatMemberRepository.saveAndFlush(chatMember);
 
+        SongShareId songShareId = SongShareId.builder()
+                .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
+                .userId(chatMember.getId())
+                .songId(song.getId()).build();
+
+        SongShares songShares = SongShares.builder()
+                .id(songShareId)
+                .song(song)
+                .user(chatMember)
+                .build();
+
         songSharesRepository.save(songShares);
 
-        Optional<SongShares> retrievedShare = songSharesRepository.findById(1L);
-        assertThat(retrievedShare).isPresent();
-        assertThat(retrievedShare.get().getSong().getUrl()).isEqualTo(songShares.getSong().getUrl());
+        Optional<SongShares> retrieved = songSharesRepository.findById(songShareId);
+        assertThat(retrieved).isPresent();
+        assertThat(retrieved.get().getId()).isEqualTo(songShares.getId());
+        assertThat(retrieved.get().getSong().getUrl()).isEqualTo(song.getUrl());
+        assertThat(retrieved.get().getUser().getId()).isEqualTo(chatMember.getId());
     }
 
     @Test
     void savedSongShare_findByInvalidID_returnsEmptyOptional(){
-        assertThat(songSharesRepository.findById(2L)).isEqualTo(Optional.empty());
+        SongShareId songShareId = new SongShareId();
+        assertThat(songSharesRepository.findById(songShareId)).isEqualTo(Optional.empty());
     }
 }

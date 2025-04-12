@@ -35,7 +35,7 @@ class PlatformServiceTest {
 
         platformService.loadPlatforms();
 
-        Platform platformReturned = platformService.getPlatformByName(spotify.getName());
+        Platform platformReturned = platformService.getPlatformByName("SPOTIFY");
 
         verify(platformRepository, times(1)).findAll();
         assertThat(platformReturned).isEqualTo(spotify);
@@ -59,7 +59,7 @@ class PlatformServiceTest {
 
         platformService.loadPlatforms();
 
-        Boolean platformReturned = platformService.platformExists(spotify.getName());
+        Boolean platformReturned = platformService.platformExists("SPOTIFY");
 
         verify(platformRepository, times(1)).findAll();
         assertThat(platformReturned).isTrue();

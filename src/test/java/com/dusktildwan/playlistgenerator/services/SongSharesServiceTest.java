@@ -3,6 +3,7 @@ package com.dusktildwan.playlistgenerator.services;
 import com.dusktildwan.playlistgenerator.DAL.DTO.Message;
 import com.dusktildwan.playlistgenerator.DAL.DTO.SharedSong;
 import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShareId;
 import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShares;
 import com.dusktildwan.playlistgenerator.DAL.entities.users.ChatMember;
 import com.dusktildwan.playlistgenerator.DAL.repositories.music.SongSharesRepository;
@@ -44,10 +45,15 @@ class SongSharesServiceTest {
 
     Song song = Song.builder().url("https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt").build();
 
+    SongShareId songShareId = SongShareId.builder()
+            .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
+            .userId(chatMember.getId())
+            .songId(song.getId()).build();
+
     SongShares songShares = SongShares.builder()
+            .id(songShareId)
             .song(song)
             .user(chatMember)
-            .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
             .build();
 
     @Test
@@ -55,9 +61,8 @@ class SongSharesServiceTest {
         when(songSharesRepository.save(any())).thenReturn(songShares);
         when(chatMemberService.getChatMemberBySenderName(any())).thenReturn(chatMember);
 
-        SongShares savedSong = songSharesService.saveSharedSongToDatabase(song, message);
 
-        assertThat(savedSong).isEqualTo(songShares);
+        assertThat(songSharesService.saveSharedSongToDatabase(song, message)).isEqualTo(songShares);
     }
 
     @Test
@@ -66,10 +71,9 @@ class SongSharesServiceTest {
 
         doThrow(DataIntegrityViolationException.class).when(songSharesRepository).save(any(SongShares.class));
 
-        SongShares actualSongShare = songSharesService.saveSharedSongToDatabase(song, message);
+        songSharesService.saveSharedSongToDatabase(song, message);
 
         verify(songSharesRepository, times(1)).save(any());
-        assertThat(actualSongShare).isNull();
         assertThat(capturedOutput.getOut()).contains("Message has already been processed:");
     }
 

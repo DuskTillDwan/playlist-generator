@@ -2,6 +2,7 @@ package com.dusktildwan.playlistgenerator.services;
 
 import com.dusktildwan.playlistgenerator.DAL.DTO.Message;
 import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShareId;
 import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShares;
 import com.dusktildwan.playlistgenerator.DAL.repositories.music.SongSharesRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,15 @@ public class SongSharesService {
 
 
     public SongShares saveSharedSongToDatabase(Song song, Message message) {
+        SongShareId id = SongShareId.builder()
+                .songId(song.getId())
+                .userId(chatMemberService.getChatMemberBySenderName(message).getId())
+                .sharedAt(instantToLocalDateTime(message)).build();
+
         SongShares songShare = SongShares.builder()
+                .id(id)
                 .song(song)
                 .user(chatMemberService.getChatMemberBySenderName(message))
-                .sharedAt(instantToLocalDateTime(message))
                 .build();
         try{
             return songSharesRepository.save(songShare);
