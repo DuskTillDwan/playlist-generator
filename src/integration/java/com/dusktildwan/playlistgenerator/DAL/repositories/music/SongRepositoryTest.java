@@ -25,9 +25,9 @@
 
      @Test
      void savesSong_Successfully(){
-         Song savedSong = songRepository.saveAndFlush(song);
+         Song actualSong = songRepository.saveAndFlush(song);
 
-         assertThat(savedSong).isEqualTo(song);
+         assertThat(actualSong).isEqualTo(song);
      }
 
      @Test

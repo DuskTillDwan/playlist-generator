@@ -57,12 +57,13 @@ class SongSharesServiceTest {
             .build();
 
     @Test
-    void saveSharedSongToDatabase() {
+    void saveSharedSongToDatabase(CapturedOutput capturedOutput) {
         when(songSharesRepository.save(any())).thenReturn(songShares);
         when(chatMemberService.getChatMemberBySenderName(any())).thenReturn(chatMember);
 
 
         assertThat(songSharesService.saveSharedSongToDatabase(song, message)).isEqualTo(songShares);
+        assertThat(capturedOutput.getOut()).contains("CREATED NEW SONG SHARE FOR SONG");
     }
 
     @Test

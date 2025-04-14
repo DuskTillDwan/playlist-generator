@@ -49,7 +49,7 @@ public class ChatMemberService {
     public Boolean memberExists(String participantName){
         //check cache first
         if(!isNewMember(participantName)){
-            log.error("Chat Member: {} already exists", participantName);
+            log.info("Chat Member: {} already exists", participantName);
             return true;
         }
 

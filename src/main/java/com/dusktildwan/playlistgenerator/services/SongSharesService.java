@@ -40,6 +40,7 @@ public class SongSharesService {
                 .user(chatMemberService.getChatMemberBySenderName(message))
                 .build();
         try{
+            log.info("CREATED NEW SONG SHARE FOR SONG: {}, USER: {}", song.getUrl(), message.senderName());
             return songSharesRepository.save(songShare);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             //swallow exception
@@ -49,14 +50,14 @@ public class SongSharesService {
         return null;
     }
 
-    private static LocalDateTime instantToLocalDateTime(Message message) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault());
-    }
-
     private SongShareId createId(Song song, Message message){
         return SongShareId.builder()
                 .songId(song.getId())
                 .userId(chatMemberService.getChatMemberBySenderName(message).getId())
                 .sharedAt(instantToLocalDateTime(message)).build();
+    }
+
+    private static LocalDateTime instantToLocalDateTime(Message message) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault());
     }
 }

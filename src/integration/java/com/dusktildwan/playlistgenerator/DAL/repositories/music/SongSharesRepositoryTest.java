@@ -76,10 +76,8 @@ public class SongSharesRepositoryTest {
     @Test
     void savesSongShare_savesDuplicateShare_doesNotSave(){
 
-        System.out.println("song&chatmember save vvvv");
         songRepository.saveAndFlush(song);
         chatMemberRepository.saveAndFlush(chatMember);
-        System.out.println("song&chatmember save ^^^^");
 
         SongShareId songShareId = SongShareId.builder()
                 .sharedAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault()))
@@ -92,9 +90,7 @@ public class SongSharesRepositoryTest {
                 .user(chatMember)
                 .build();
 
-        System.out.println("Song Share 1st Save and flush vvv");
         songSharesRepository.saveAndFlush(songShares);
-        System.out.println("Song Share 1st Save and flush ^^^");
 
         Optional<SongShares> retrieved = songSharesRepository.findById(songShareId);
         assertThat(retrieved).isPresent();

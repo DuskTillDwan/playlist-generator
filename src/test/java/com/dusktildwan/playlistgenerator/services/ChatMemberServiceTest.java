@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
 class ChatMemberServiceTest {
 
     @Mock
@@ -45,6 +47,19 @@ class ChatMemberServiceTest {
     @Test
     void saveMemberByChatParticipants_returnsExpectedMember() {
         when(chatMemberRepository.saveAndFlush(any())).thenReturn(chatMemberReed);
+
+        ChatMember actualChatMember = chatMemberService.saveMemberByChatParticipants(participantReed);
+
+        verify(chatMemberRepository, times(1)).saveAndFlush(any());
+        assertThat(actualChatMember.getName()).isEqualTo(participantReed.name());
+    }
+
+    @Test
+    void saveMemberByChatParticipants_ShouldSaveNewMember() {
+        when(chatMemberRepository.saveAndFlush(any())).thenReturn(chatMemberReed);
+        when(chatMemberRepository.findAll()).thenReturn(List.of(chatMemberSusan));
+
+        chatMemberService.initMemberMap();
 
         ChatMember actualChatMember = chatMemberService.saveMemberByChatParticipants(participantReed);
 
@@ -82,6 +97,30 @@ class ChatMemberServiceTest {
         verify(chatMemberRepository, times(1)).findByName(participantReed.name());
         assertThat(memberNotFound).isFalse();
     }
+
+    @Test
+    void memberExists_existsInCache_ReturnsTrue(CapturedOutput capturedOutput) {
+        when(chatMemberRepository.findAll()).thenReturn(List.of(chatMemberReed, chatMemberSusan));
+
+        chatMemberService.initMemberMap();
+
+        verify(chatMemberRepository, times(1)).findAll();
+        assertThat(chatMemberService.memberExists(participantReed.name())).isTrue();
+        verify(chatMemberRepository, never()).findByName(participantReed.name());
+        assertThat(capturedOutput.getOut()).contains("Chat Member: "+ participantReed.name() +" already exists");
+    }
+
+    @Test
+    void memberExists_DoesNotExistInCache_FetchesFromDatabase() {
+        when(chatMemberRepository.findAll()).thenReturn(List.of(chatMemberReed, chatMemberSusan));
+
+        chatMemberService.initMemberMap();
+
+        verify(chatMemberRepository, times(1)).findAll();
+        assertThat(chatMemberService.memberExists("Dj Ramos")).isFalse();
+        verify(chatMemberRepository, times(1)).findByName("Dj Ramos");
+    }
+
 
     @Test
     void isNewMember_ReturnsFalseForExistingMember() {
