@@ -24,15 +24,18 @@ public class SongSharesService {
 
     private final SongSharesRepository songSharesRepository;
 
-
     public SongShares saveSharedSongToDatabase(Song song, Message message) {
-        SongShareId id = SongShareId.builder()
-                .songId(song.getId())
-                .userId(chatMemberService.getChatMemberBySenderName(message).getId())
-                .sharedAt(instantToLocalDateTime(message)).build();
+
+        SongShareId songShareId = createId(song, message);
+
+        if (songSharesRepository.existsById(songShareId)) {
+            log.info("Message has already been processed: USER: {}, shared_at: {}, link: {}",
+                    message.senderName(), message.timestampMS(), message.share().link());
+            return null;
+        }
 
         SongShares songShare = SongShares.builder()
-                .id(id)
+                .id(songShareId)
                 .song(song)
                 .user(chatMemberService.getChatMemberBySenderName(message))
                 .build();
@@ -40,7 +43,7 @@ public class SongSharesService {
             return songSharesRepository.save(songShare);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             //swallow exception
-            log.error("Message has already been processed: USER: {}, shared_at: {}, link: {}",
+            log.error("DataIntegrityViolation Caught: Message duplicate processed for: USER: {}, shared_at: {}, link: {}",
                     message.senderName(), message.timestampMS(), message.share().link());
         }
         return null;
@@ -48,5 +51,12 @@ public class SongSharesService {
 
     private static LocalDateTime instantToLocalDateTime(Message message) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(message.timestampMS()), ZoneId.systemDefault());
+    }
+
+    private SongShareId createId(Song song, Message message){
+        return SongShareId.builder()
+                .songId(song.getId())
+                .userId(chatMemberService.getChatMemberBySenderName(message).getId())
+                .sharedAt(instantToLocalDateTime(message)).build();
     }
 }

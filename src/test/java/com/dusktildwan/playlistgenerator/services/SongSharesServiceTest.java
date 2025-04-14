@@ -66,7 +66,19 @@ class SongSharesServiceTest {
     }
 
     @Test
-    void saveSharedSongToDatabase_ExceptionThrownOnRepeatShare(CapturedOutput capturedOutput) {
+    void shouldNotSaveDuplicateSongShare(CapturedOutput capturedOutput) {
+        when(chatMemberService.getChatMemberBySenderName(any())).thenReturn(chatMember);
+
+        when(songSharesRepository.existsById(any(SongShareId.class))).thenReturn(true);
+
+        songSharesService.saveSharedSongToDatabase(song, message);
+
+        verify(songSharesRepository, never()).save(any());
+        assertThat(capturedOutput.getOut()).contains("Message has already been processed: USER");
+    }
+
+    @Test
+    void shouldThrowExceptionOnRepeatShareInserted(CapturedOutput capturedOutput) {
         when(chatMemberService.getChatMemberBySenderName(any())).thenReturn(chatMember);
 
         doThrow(DataIntegrityViolationException.class).when(songSharesRepository).save(any(SongShares.class));
@@ -74,7 +86,7 @@ class SongSharesServiceTest {
         songSharesService.saveSharedSongToDatabase(song, message);
 
         verify(songSharesRepository, times(1)).save(any());
-        assertThat(capturedOutput.getOut()).contains("Message has already been processed:");
+        assertThat(capturedOutput.getOut()).contains("DataIntegrityViolation Caught: Message duplicate processed for:");
     }
 
 }
