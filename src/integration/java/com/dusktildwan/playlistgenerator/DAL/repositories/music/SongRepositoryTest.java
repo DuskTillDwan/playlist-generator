@@ -14,7 +14,7 @@
 
  @DataJpaTest
  @AutoConfigureEmbeddedDatabase
- @Sql("/scripts/test-db.sql")
+ @Sql({"/scripts/platforms.sql", "/scripts/songs.sql"})
  public class SongRepositoryTest {
      @Autowired
      SongRepository songRepository;

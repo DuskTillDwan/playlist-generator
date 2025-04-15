@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @DataJpaTest
 @AutoConfigureEmbeddedDatabase
-@Sql("/scripts/test-db.sql")
+@Sql("/scripts/chat-member.sql")
 class ChatMemberRepositoryTest {
 
     @Autowired
