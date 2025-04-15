@@ -3,7 +3,6 @@ package com.dusktildwan.playlistgenerator.services;
 import com.dusktildwan.playlistgenerator.DAL.DTO.FacebookChat;
 import com.dusktildwan.playlistgenerator.DAL.DTO.Message;
 import com.dusktildwan.playlistgenerator.DAL.DTO.Participant;
-import com.dusktildwan.playlistgenerator.DAL.DTO.SharedSong;
 import com.dusktildwan.playlistgenerator.DAL.entities.users.ChatMember;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +14,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import java.util.List;
 
+import static com.dusktildwan.playlistgenerator.util.TestDataFactory.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -32,40 +32,16 @@ class UploadServiceTest {
     @InjectMocks
     UploadService uploadService;
 
-    Message spotifyMessage = new Message("Bruce Banner",
-            1740223403518L,
-            "This is content",
-            new SharedSong("https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt"));
+    Message soundCloudMessage = createSoundCloudMessage("Susan Storm");
 
-    Message youtubeMessage = new Message("Mister Rodgers",
-            1740223403518L,
-            "This is content",
-            new SharedSong("https://www.youtube.com/watch?v=UUxheK7soS4"));
-
-    Message soundCloudMessage = new Message("Susan Storm",
-            1740223403518L,
-            "This is content",
-            new SharedSong("https://on.soundcloud.com/vJsnHfadHpfDyfK9A"));
-
-    Message unknownPlatformMessage = new Message("Louis Bard",
-            1740223403518L,
-            "This is content",
-            new SharedSong("somegarbage.com/vJsnHfadHpfDyfK9A"));
-
-    Message emptyShareLinkMessage = new Message("Susan Storm",
-            1740223403518L,
-            "This is content",
-            new SharedSong(null));
-
-    Message nullShareMessage = new Message("Susan Storm",
-            1740223403518L,
-            "This is content",
-            null);
-
-    FacebookChat facebookChat = new FacebookChat(List.of(new Participant("Susan Storm"),
-            new Participant("Mister Rodgers"),
-            new Participant("Bruce Banner")),
-            List.of(spotifyMessage, soundCloudMessage, youtubeMessage, unknownPlatformMessage));
+    FacebookChat facebookChat = createFacebookChat(
+            List.of(createParticipant("Susan Storm"),
+                    createParticipant("Mister Rodgers"),
+                    createParticipant("Bruce Banner")),
+            List.of(createSpotifyMessage("Bruce Banner"),
+                    soundCloudMessage,
+                    createYouTubeMessage("Mister Rodgers"),
+                    createUnknownPlatformMessage("Louis Bard")));
 
     @Test
     void processMessages_AllNewParticipants(CapturedOutput capturedOutput){
@@ -164,7 +140,7 @@ class UploadServiceTest {
 
         //calls save song for every platform except "UNKNOWN"
         verify(songService, times(facebookChat.messages().size()-1)).saveSongAndSongShareToDatabase(any());
-        assertThat(capturedOutput.getOut()).contains("New Chat Member not apart of participants added: "+soundCloudMessage.senderName());
+        assertThat(capturedOutput.getOut()).contains("New Chat Member not apart of participants added: "+ createSoundCloudMessage("Susan Storm").senderName());
         assertThat(capturedOutput.getOut()).contains("UNSUPPORTED PLATFORM RECEIVED:");
     }
 
@@ -172,7 +148,7 @@ class UploadServiceTest {
     void processMessagesWithEmptySharedLink() {
         FacebookChat chatWithEmptyLink = new FacebookChat(
                 facebookChat.participants(),
-                List.of(emptyShareLinkMessage)
+                List.of(createEmptyUrlMessage("Susan Storm"))
         );
         uploadService.processMessages(chatWithEmptyLink);
 
@@ -183,7 +159,7 @@ class UploadServiceTest {
     void processMessagesWithNullShare() {
         FacebookChat chatWithEmptyLink = new FacebookChat(
                 facebookChat.participants(),
-                List.of(nullShareMessage)
+                List.of(createNullSharedSongMessage("Susan Storm"))
         );
         uploadService.processMessages(chatWithEmptyLink);
 

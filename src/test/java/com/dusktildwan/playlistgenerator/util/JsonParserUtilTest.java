@@ -16,7 +16,7 @@ class JsonParserUtilTest {
 
     @Test
     void parseFacebookChat_parsesMultipartFile() throws IOException {
-        Path path = Paths.get("src/test/java/resources/test_chat.json");
+        Path path = Paths.get("src/test/resources/test_chat.json");
         byte[] jsonBytes = Files.readAllBytes(path);
 
         MockMultipartFile mockFile = new MockMultipartFile(
