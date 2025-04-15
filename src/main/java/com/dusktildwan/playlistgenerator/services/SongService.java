@@ -27,16 +27,18 @@ public class SongService {
 
         Platform platform = platformService.getPlatformByName(platformName);
 
+
+        if(songExistsByUrl(songUrl)){
+            log.info("SONG EXISTS IN DB FOR URL: {}", songUrl);
+            Song repeatSong = getSongByUrl(songUrl);
+            songSharesService.saveSharedSongToDatabase(repeatSong, message);
+            return null;
+        }
+
         Song newSong = Song.builder()
                 .platformId(platform)
                 .url(songUrl)
                 .build();
-
-        if(songExistsByUrl(songUrl)){
-            log.info("SONG EXISTS IN DB FOR URL: {}", songUrl);
-            songSharesService.saveSharedSongToDatabase(newSong, message);
-            return null;
-        }
 
         Song savedSong = songRepository.save(newSong);
         log.info("Song saved: {}", savedSong.getUrl());

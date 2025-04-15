@@ -40,8 +40,9 @@ public class SongSharesService {
                 .user(chatMemberService.getChatMemberBySenderName(message))
                 .build();
         try{
+            SongShares saved = songSharesRepository.save(songShare);
             log.info("CREATED NEW SONG SHARE FOR SONG: {}, USER: {}", song.getUrl(), message.senderName());
-            return songSharesRepository.save(songShare);
+            return saved;
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             //swallow exception
             log.error("DataIntegrityViolation Caught: Message duplicate processed for: USER: {}, shared_at: {}, link: {}",

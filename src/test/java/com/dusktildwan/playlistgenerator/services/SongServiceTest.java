@@ -1,7 +1,6 @@
 package com.dusktildwan.playlistgenerator.services;
 
 import com.dusktildwan.playlistgenerator.DAL.DTO.Message;
-import com.dusktildwan.playlistgenerator.DAL.DTO.SharedSong;
 import com.dusktildwan.playlistgenerator.DAL.entities.music.Platform;
 import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
 import com.dusktildwan.playlistgenerator.DAL.repositories.music.SongRepository;
@@ -13,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
+import static com.dusktildwan.playlistgenerator.util.TestDataFactory.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -36,22 +36,13 @@ class SongServiceTest {
     Platform youtube = new Platform(2L, "YOUTUBE");
     Platform soundcloud = new Platform(3L, "SOUNDCLOUD");
 
-    Message spotifyMessage = new Message("Bruce Banner",
-            1740223403518L,
-            "This is content",
-            new SharedSong("https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt"));
+    Message spotifyMessage = createSpotifyMessage("Bruce Banner");
 
-    Message youtubeMessage = new Message("Bruce Banner",
-                1740223403518L,
-                "This is content",
-                new SharedSong("https://www.youtube.com/watch?v=UUxheK7soS4"));
+    Message youtubeMessage = createYouTubeMessage("Bruce Banner");
 
-    Message soundCloudMessage = new Message("Bruce Banner",
-                1740223403518L,
-                "This is content",
-                new SharedSong("https://on.soundcloud.com/vJsnHfadHpfDyfK9A"));
+    Message soundCloudMessage = createSoundCloudMessage("Bruce Banner");
 
-    Song expectedSong = Song.builder().url("https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt").build();
+    Song expectedSong = Song.builder().id(1L).url("https://open.spotify.com/track/2uvE4L5ZsYKpv8hbK4TIOt").build();
 
     @Test
     void shouldSaveSpotifySongAndSongShareToDatabase() {
@@ -107,6 +98,7 @@ class SongServiceTest {
     @Test
     void shouldSkipRepeatSongByUrl(CapturedOutput capturedOutput) {
         when(platformService.getPlatformByName(any())).thenReturn(spotify);
+        when(songRepository.findSongByUrl(any())).thenReturn(expectedSong);
         when(songRepository.existsByUrl(anyString())).thenReturn(true);
 
         Song actual = songService.saveSongAndSongShareToDatabase(spotifyMessage);
