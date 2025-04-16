@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @DataJpaTest
 @AutoConfigureEmbeddedDatabase
-@Sql("/scripts/test-db.sql")
+@Sql("/scripts/chat-member.sql")
 class ChatMemberRepositoryTest {
 
     @Autowired
@@ -48,6 +48,17 @@ class ChatMemberRepositoryTest {
         testEntityManager.persist(savedMember);
 
         Optional<ChatMember> foundMember = chatMemberRepository.findById(1L);
+
+        Assertions.assertThat(foundMember).contains(savedMember);
+    }
+
+    @Test
+    void chatMemberRepository_findByName(){
+        ChatMember savedMember = chatMemberRepository.save(chatMember);
+
+        testEntityManager.persist(savedMember);
+
+        Optional<ChatMember> foundMember = chatMemberRepository.findByName("Adam Savage");
 
         Assertions.assertThat(foundMember).contains(savedMember);
     }

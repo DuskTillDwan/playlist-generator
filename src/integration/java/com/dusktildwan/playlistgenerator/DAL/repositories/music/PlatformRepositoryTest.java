@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.tuple;
 
 @DataJpaTest
 @AutoConfigureEmbeddedDatabase
-@Sql("/scripts/test-db.sql")
+@Sql("/scripts/platforms.sql")
 class PlatformRepositoryTest {
     @Autowired
     PlatformRepository platformRepository;
