@@ -4,7 +4,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-apply(from = File("${project.rootDir}/gradle/integration.gradle")) // rename if needed
+apply(from = File("./gradle/integration.gradle.kts")) // rename if needed
 
 group = "com.dusktildwan"
 version = "0.0.1-SNAPSHOT"
