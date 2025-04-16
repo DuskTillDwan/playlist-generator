@@ -1,28 +1,28 @@
- package com.dusktildwan.playlistgenerator.DAL.repositories.music;
+package com.dusktildwan.playlistgenerator.DAL.repositories.music;
 
- import com.dusktildwan.playlistgenerator.DAL.DTO.Message;
- import com.dusktildwan.playlistgenerator.DAL.DTO.SharedSong;
- import com.dusktildwan.playlistgenerator.DAL.entities.music.Platform;
- import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
- import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShareId;
- import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShares;
- import com.dusktildwan.playlistgenerator.DAL.entities.users.ChatMember;
- import com.dusktildwan.playlistgenerator.DAL.repositories.users.ChatMemberRepository;
- import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
- import jakarta.persistence.EntityManager;
- import org.junit.jupiter.api.Test;
- import org.springframework.beans.factory.annotation.Autowired;
- import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
- import org.springframework.test.context.jdbc.Sql;
+import com.dusktildwan.playlistgenerator.DAL.DTO.Message;
+import com.dusktildwan.playlistgenerator.DAL.DTO.SharedSong;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.Platform;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShareId;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.SongShares;
+import com.dusktildwan.playlistgenerator.DAL.entities.users.ChatMember;
+import com.dusktildwan.playlistgenerator.DAL.repositories.users.ChatMemberRepository;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 
- import java.time.Instant;
- import java.time.LocalDateTime;
- import java.time.ZoneId;
- import java.util.Optional;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Optional;
 
- import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
- @DataJpaTest
+@DataJpaTest
 @AutoConfigureEmbeddedDatabase
 @Sql({"/scripts/chat-member.sql","/scripts/platforms.sql", "/scripts/songs.sql",  "/scripts/songShares.sql"})
 public class SongSharesRepositoryTest {
