@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class PlaylistGeneratorApplication {
+public class BatchServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PlaylistGeneratorApplication.class, args);
+		SpringApplication.run(BatchServiceApplication.class, args);
 	}
 
 }

@@ -1,16 +1,16 @@
- package com.dusktildwan.playlistgenerator.DAL.repositories.music;
+package com.dusktildwan.playlistgenerator.DAL.repositories.music;
 
- import com.dusktildwan.playlistgenerator.DAL.entities.music.Platform;
- import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
- import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
- import org.junit.jupiter.api.Test;
- import org.springframework.beans.factory.annotation.Autowired;
- import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
- import org.springframework.dao.DataIntegrityViolationException;
- import org.springframework.test.context.jdbc.Sql;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.Platform;
+import com.dusktildwan.playlistgenerator.DAL.entities.music.Song;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.jdbc.Sql;
 
- import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
- import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
  @DataJpaTest
  @AutoConfigureEmbeddedDatabase
