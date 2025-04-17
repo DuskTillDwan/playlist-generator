@@ -1,7 +1,6 @@
 package com.dusktildwan.playlistgenerator.scraper;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -9,9 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MessageExtractorTest {
-
-    @Autowired
-    private MessageExtractor messageExtractor;
 
     @Test
     public void testExtractSongLinks() {
