@@ -1,7 +1,5 @@
 plugins {
-    java
     id("org.springframework.boot") version "3.4.2"
-    id("io.spring.dependency-management") version "1.1.7"
 }
 
 apply(from = File("${project.rootDir}/gradle/integration.gradle.kts")) // rename if needed
@@ -9,20 +7,10 @@ apply(from = File("${project.rootDir}/gradle/integration.gradle.kts")) // rename
 group = "com.dusktildwan"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
-}
-
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -37,14 +25,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     testImplementation("org.springframework.boot:spring-boot-starter")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 tasks.check {
