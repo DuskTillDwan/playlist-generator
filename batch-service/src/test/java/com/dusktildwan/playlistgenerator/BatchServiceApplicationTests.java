@@ -13,7 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
- class PlaylistGeneratorApplicationTests {
+ class BatchServiceApplicationTests {
 
 	@MockitoBean
 	ChatMemberRepository chatMemberRepository;
