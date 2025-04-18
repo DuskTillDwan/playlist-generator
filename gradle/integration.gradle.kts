@@ -25,6 +25,7 @@ dependencies {
     constraints {
         add("implementation", "org.apache.commons:commons-compress:1.26.0")
     }
+    add("integrationTestImplementation", project(":common"))
 
     add("integrationTestImplementation", "io.zonky.test:embedded-database-spring-test:2.6.0") {
         exclude(group = "org.apache.commons", module = "commons-compress")
