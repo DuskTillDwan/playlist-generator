@@ -1,9 +1,11 @@
 package com.dusktildwan.spotifyservice;
 
+import com.dusktildwan.spotifyservice.config.JpaConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 
 import java.awt.*;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.net.URISyntaxException;
 
 @Slf4j
 @SpringBootApplication
+@Import(JpaConfig.class)
 public class SpotifyServiceApplication {
 
 	public static void main(String[] args) {

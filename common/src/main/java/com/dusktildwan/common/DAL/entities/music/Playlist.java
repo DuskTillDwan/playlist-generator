@@ -10,7 +10,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(schema = "music")
+@Builder
+@Table(name = "playlists", schema = "music")
 public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +29,7 @@ public class Playlist {
     private String externalId; // Playlist ID from Spotify/YouTube/SoundCloud
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default()
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
 

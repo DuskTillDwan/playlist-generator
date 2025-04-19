@@ -11,9 +11,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "song_shares",
-        schema = "music"
-//        uniqueConstraints = @UniqueConstraint(columnNames = {"song_id", "user_id", "shared_at"})
-)
+        schema = "music")
 public class SongShares {
 
     @EmbeddedId

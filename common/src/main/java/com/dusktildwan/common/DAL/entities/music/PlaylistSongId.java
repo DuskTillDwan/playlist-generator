@@ -1,5 +1,7 @@
 package com.dusktildwan.common.DAL.entities.music;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +14,12 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class PlaylistSongId implements Serializable {
+    @Column(name = "playlist_id")
     private Long playlistId;
+
+    @Column(name = "song_id")
     private Long songId;
 
     @Override
