@@ -1,5 +1,6 @@
 package com.dusktildwan.batch.services;
 
+import com.dusktildwan.batch.util.PlatformType;
 import com.dusktildwan.common.DAL.DTO.FacebookChat;
 import com.dusktildwan.common.DAL.DTO.Message;
 import com.dusktildwan.common.DAL.DTO.Participant;
@@ -38,7 +39,7 @@ class UploadServiceTest {
             List.of(createParticipant("Susan Storm"),
                     createParticipant("Mister Rodgers"),
                     createParticipant("Bruce Banner")),
-            List.of(createSpotifyMessage("Bruce Banner"),
+            List.of(createValidSpotifyMessage("Bruce Banner"),
                     soundCloudMessage,
                     createYouTubeMessage("Mister Rodgers"),
                     createUnknownPlatformMessage("Louis Bard")));
@@ -91,7 +92,7 @@ class UploadServiceTest {
         verify(platformService).platformExists("UNKNOWN");
 
         //calls save song for every platform except "UNKNOWN"
-        verify(songService, times(facebookChat.messages().size()-1)).saveSongAndSongShareToDatabase(any());
+        verify(songService, times(facebookChat.messages().size()-1)).saveSongAndSongShareToDatabase(any(), any(PlatformType.class));
     }
 
     @Test
@@ -114,7 +115,7 @@ class UploadServiceTest {
         verify(platformService).platformExists("UNKNOWN");
 
         //calls save song for every platform except "UNKNOWN"
-        verify(songService, times(facebookChat.messages().size()-1)).saveSongAndSongShareToDatabase(any());
+        verify(songService, times(facebookChat.messages().size()-1)).saveSongAndSongShareToDatabase(any(), any(PlatformType.class));
         assertThat(capturedOutput.getOut()).contains("UNSUPPORTED PLATFORM RECEIVED:");
     }
 
@@ -139,8 +140,9 @@ class UploadServiceTest {
         verify(platformService).platformExists("UNKNOWN");
 
         //calls save song for every platform except "UNKNOWN"
-        verify(songService, times(facebookChat.messages().size()-1)).saveSongAndSongShareToDatabase(any());
+        verify(songService, times(facebookChat.messages().size()-1)).saveSongAndSongShareToDatabase(any(), any(PlatformType.class));
         assertThat(capturedOutput.getOut()).contains("New Chat Member not apart of participants added: "+ createSoundCloudMessage("Susan Storm").senderName());
+        assertThat(capturedOutput.getOut()).contains("soundcloud integration pending, assuming valid tracks for now ");
         assertThat(capturedOutput.getOut()).contains("UNSUPPORTED PLATFORM RECEIVED:");
     }
 
@@ -153,7 +155,7 @@ class UploadServiceTest {
         uploadService.processMessages(chatWithEmptyLink);
 
         verifyNoInteractions(platformService);
-        verify(songService, never()).saveSongAndSongShareToDatabase(any());
+        verify(songService, never()).saveSongAndSongShareToDatabase(any(), any(PlatformType.class));
     }
     @Test
     void processMessagesWithNullShare() {
@@ -164,7 +166,36 @@ class UploadServiceTest {
         uploadService.processMessages(chatWithEmptyLink);
 
         verifyNoInteractions(platformService);
-        verify(songService, never()).saveSongAndSongShareToDatabase(any());
+        verify(songService, never()).saveSongAndSongShareToDatabase(any(), any(PlatformType.class));
+    }
+
+    @Test
+    void processMessagesWithNonTrackShare(CapturedOutput capturedOutput) {
+        when(platformService.platformExists("SPOTIFY")).thenReturn(true);
+
+        FacebookChat chatWithAlbumLink = new FacebookChat(
+                facebookChat.participants(),
+                List.of(createAlbumSpotifyMessage("Bruce Banner"))
+        );
+        uploadService.processMessages(chatWithAlbumLink);
+
+        verify(songService, never()).saveSongAndSongShareToDatabase(any(), any(PlatformType.class));
+        assertThat(capturedOutput.getOut()).contains("Not valid track:", "for platform");
+    }
+
+    @Test
+    void processMessagesWithInvalidURI(CapturedOutput capturedOutput) {
+        when(platformService.platformExists("SPOTIFY")).thenReturn(true);
+
+        FacebookChat chatWithAlbumLink = new FacebookChat(
+                facebookChat.participants(),
+                List.of(createInvalidURISpotifyMessage("Bruce Banner"))
+        );
+
+        uploadService.processMessages(chatWithAlbumLink);
+
+        verify(songService, never()).saveSongAndSongShareToDatabase(any(), any(PlatformType.class));
+        assertThat(capturedOutput.getOut()).contains("URISyntaxException occurred: SKIPPING SONG");
     }
 
 }

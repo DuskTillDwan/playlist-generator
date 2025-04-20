@@ -9,11 +9,25 @@ import java.util.List;
 
 public class TestDataFactory {
 
-    public static Message createSpotifyMessage(String sender) {
+    public static Message createValidSpotifyMessage(String sender) {
         return new Message(sender,
                 System.currentTimeMillis(),
                 "Spotify message content",
                 new SharedSong("https://open.spotify.com/track/123"));
+    }
+
+    public static Message createAlbumSpotifyMessage(String sender) {
+        return new Message(sender,
+                System.currentTimeMillis(),
+                "Spotify message content",
+                new SharedSong("https://open.spotify.com/album/123"));
+    }
+
+    public static Message createInvalidURISpotifyMessage(String sender) {
+        return new Message(sender,
+                System.currentTimeMillis(),
+                "Spotify message content",
+                new SharedSong("https://open.spotify.com / alb um/123"));
     }
 
     public static Message createYouTubeMessage(String sender) {

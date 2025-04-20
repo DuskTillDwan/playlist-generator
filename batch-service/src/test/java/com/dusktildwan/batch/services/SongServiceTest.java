@@ -1,5 +1,6 @@
 package com.dusktildwan.batch.services;
 
+import com.dusktildwan.batch.util.PlatformType;
 import com.dusktildwan.common.DAL.DTO.Message;
 import com.dusktildwan.common.DAL.entities.music.Platform;
 import com.dusktildwan.common.DAL.entities.music.Song;
@@ -36,7 +37,7 @@ class SongServiceTest {
     Platform youtube = new Platform(2L, "YOUTUBE");
     Platform soundcloud = new Platform(3L, "SOUNDCLOUD");
 
-    Message spotifyMessage = createSpotifyMessage("Bruce Banner");
+    Message spotifyMessage = createValidSpotifyMessage("Bruce Banner");
 
     Message youtubeMessage = createYouTubeMessage("Bruce Banner");
 
@@ -49,7 +50,7 @@ class SongServiceTest {
         when(platformService.getPlatformByName("SPOTIFY")).thenReturn(spotify);
         when(songRepository.save(any(Song.class))).thenReturn(expectedSong);
 
-        Song actual = songService.saveSongAndSongShareToDatabase(spotifyMessage);
+        Song actual = songService.saveSongAndSongShareToDatabase(spotifyMessage, PlatformType.SPOTIFY);
 
         verify(platformService, times(1)).getPlatformByName(spotify.getName());
         verify(songSharesService, times(1)).saveSharedSongToDatabase(any(Song.class), any(Message.class));
@@ -62,7 +63,7 @@ class SongServiceTest {
         expectedSong.setUrl("https://www.youtube.com/watch?v=UUxheK7soS4");
         when(songRepository.save(any(Song.class))).thenReturn(expectedSong);
 
-        Song actual = songService.saveSongAndSongShareToDatabase(youtubeMessage);
+        Song actual = songService.saveSongAndSongShareToDatabase(youtubeMessage, PlatformType.YOUTUBE);
 
         verify(platformService, times(1)).getPlatformByName(youtube.getName());
         verify(songSharesService, times(1)).saveSharedSongToDatabase(any(Song.class), any(Message.class));
@@ -75,7 +76,7 @@ class SongServiceTest {
         expectedSong.setUrl("https://on.soundcloud.com/vJsnHfadHpfDyfK9A");
         when(songRepository.save(any(Song.class))).thenReturn(expectedSong);
 
-        Song actual = songService.saveSongAndSongShareToDatabase(soundCloudMessage);
+        Song actual = songService.saveSongAndSongShareToDatabase(soundCloudMessage, PlatformType.SOUNDCLOUD);
 
         verify(platformService, times(1)).getPlatformByName(soundcloud.getName());
         verify(songSharesService, times(1)).saveSharedSongToDatabase(any(Song.class), any(Message.class));
@@ -88,7 +89,7 @@ class SongServiceTest {
         expectedSong.setUrl("https://on.soundcloud.com/vJsnHfadHpfDyfK9A");
         when(songRepository.save(any(Song.class))).thenReturn(expectedSong);
 
-        Song actual = songService.saveSongAndSongShareToDatabase(soundCloudMessage);
+        Song actual = songService.saveSongAndSongShareToDatabase(soundCloudMessage, PlatformType.SOUNDCLOUD);
 
         verify(platformService, times(1)).getPlatformByName(soundcloud.getName());
         verify(songSharesService, times(1)).saveSharedSongToDatabase(any(Song.class), any(Message.class));
@@ -101,7 +102,7 @@ class SongServiceTest {
         when(songRepository.findSongByUrl(any())).thenReturn(expectedSong);
         when(songRepository.existsByUrl(anyString())).thenReturn(true);
 
-        Song actual = songService.saveSongAndSongShareToDatabase(spotifyMessage);
+        Song actual = songService.saveSongAndSongShareToDatabase(spotifyMessage, PlatformType.SPOTIFY);
 
         verify(platformService, times(1)).getPlatformByName(anyString());
         verify(songSharesService, times(1)).saveSharedSongToDatabase(any(Song.class), any(Message.class));
