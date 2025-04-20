@@ -1,8 +1,8 @@
 package com.dusktildwan.batch.controllers;
 
 import com.dusktildwan.batch.services.UploadService;
-import com.dusktildwan.common.DAL.DTO.FacebookChat;
 import com.dusktildwan.batch.util.JsonParserUtil;
+import com.dusktildwan.common.DAL.DTO.FacebookChat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

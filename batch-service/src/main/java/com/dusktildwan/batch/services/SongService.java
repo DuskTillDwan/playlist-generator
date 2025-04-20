@@ -1,5 +1,6 @@
 package com.dusktildwan.batch.services;
 
+import com.dusktildwan.batch.util.PlatformType;
 import com.dusktildwan.common.DAL.DTO.Message;
 import com.dusktildwan.common.DAL.entities.music.Platform;
 import com.dusktildwan.common.DAL.entities.music.Song;
@@ -7,8 +8,6 @@ import com.dusktildwan.common.DAL.repositories.music.SongRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import static com.dusktildwan.batch.util.PlatformDetector.detectPlatform;
 
 @Slf4j
 @Service
@@ -21,12 +20,9 @@ public class SongService {
 
     private final SongSharesService songSharesService;
 
-    public Song saveSongAndSongShareToDatabase(Message message) {
+    public Song saveSongAndSongShareToDatabase(Message message, PlatformType platformType) {
         String songUrl = message.share().link();
-        String platformName = detectPlatform(songUrl);
-
-        Platform platform = platformService.getPlatformByName(platformName);
-
+        Platform platform = platformService.getPlatformByName(platformType.name());
 
         if(songExistsByUrl(songUrl)){
             log.info("SONG EXISTS IN DB FOR URL: {}", songUrl);

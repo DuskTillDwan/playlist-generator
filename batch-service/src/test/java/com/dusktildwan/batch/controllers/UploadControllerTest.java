@@ -87,7 +87,7 @@ class UploadControllerTest {
                 List.of(createParticipant("Susan Storm"),
                         createParticipant("Mister Rodgers"),
                         createParticipant("Bruce Banner")),
-                List.of(createSpotifyMessage("Bruce Banner"),
+                List.of(createValidSpotifyMessage("Bruce Banner"),
                         createSoundCloudMessage("Susan Storm"),
                         createYouTubeMessage("Mister Rodgers"),
                         createUnknownPlatformMessage("Louis Bard")));
