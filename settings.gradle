@@ -1,2 +1,2 @@
 rootProject.name = 'playlist-generator'
- include("common","batch-service","spotify-service")
+ include("common","batch-service","spotify-service","soundcloud-service")
