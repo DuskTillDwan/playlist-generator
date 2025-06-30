@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SpotifyApiService {
+public class SpotifySongService {
 
     private final SpotifyAuthService spotifyAuthService;
 
@@ -33,7 +33,7 @@ public class SpotifyApiService {
 
     private final PlatformRepository platformRepository;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     public HttpStatusCode addSongToPlaylist(String playlistId, String songUrl) throws RuntimeException {
         String url = "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks";
@@ -54,30 +54,77 @@ public class SpotifyApiService {
     }
 
     public HttpStatusCode loadSpotifySongInDatabaseToPlaylist(String playlistId) throws RuntimeException {
-        Platform SPOTIFY = getSpotifyPLatform();
+        Platform SPOTIFY = getSpotifyPlatform();
         String url = "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks";
         String accessToken = spotifyAuthService.getAccessToken();
 
-        //get all the songs
-        if (accessToken == null) {
-            throw new RuntimeException("Access token is missing.");
-        }
-
         List<Song> listOfSongs = songRepository.findAllByPlatformId(SPOTIFY);
-        List<String> allUris = getAllUris(listOfSongs);
 
         // Create or fetch the playlist
-        Playlist mainPlaylist = playlistRepository
+        Playlist mainPlaylist = getOrCreateMainPlaylist(playlistId, SPOTIFY);
+
+        log.info("Using Playlist: {}", mainPlaylist.getName());
+
+        List<String> allUris = linkSongsToPlaylist(listOfSongs, mainPlaylist);
+
+        // Set headers for Spotify API request
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Batch and send songs in chunks of 100
+        HttpStatusCode finalStatus = HttpStatus.OK;
+        List<List<String>> batches = partition(allUris);
+
+
+        finalStatus = batchSongRequest(batches, headers, url, finalStatus);
+
+        return finalStatus;
+    }
+
+    private HttpStatusCode batchSongRequest(List<List<String>> batches, HttpHeaders headers, String url, HttpStatusCode finalStatus) {
+        for (int i = 0; i < batches.size(); i++) {
+            List<String> batch = batches.get(i);
+            JsonObject body = new JsonObject();
+            JsonArray uriArray = new JsonArray();
+
+            addSongsToJsonArray(batch, uriArray);
+
+            body.add("uris", uriArray);
+            HttpEntity<String> request = new HttpEntity<>(body.toString(), headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+            finalStatus = response.getStatusCode();
+
+            if (!finalStatus.is2xxSuccessful()) {
+                log.warn("Batch {} failed: {}", i + 1, response.getBody());
+            } else {
+                log.info("Batch {} uploaded successfully", i + 1);
+            }
+        }
+        return finalStatus;
+    }
+
+    private static void addSongsToJsonArray(List<String> batch, JsonArray uriArray) {
+        for (String uri : batch) {
+            uriArray.add(uri);
+        }
+    }
+
+    private Playlist getOrCreateMainPlaylist(String playlistId, Platform SPOTIFY) {
+        return playlistRepository
                 .findByExternalIdAndPlatform(playlistId, SPOTIFY)
                 .orElseGet(() -> playlistRepository.saveAndFlush(
                         Playlist.builder()
-                                .name("Test Playlist")
+                                .name("Vybe Check: Test Playlist")
                                 .externalId(playlistId)
                                 .platform(SPOTIFY)
                                 .build())
                 );
+    }
 
-        log.info("Using Playlist: {}", mainPlaylist.getName());
+    private List<String> linkSongsToPlaylist(List<Song> listOfSongs, Playlist mainPlaylist) {
+        List<String> allUris = new ArrayList<>();
 
         // Link songs to the playlist in the database
         for (Song song : listOfSongs) {
@@ -100,50 +147,6 @@ public class SpotifyApiService {
                 log.info("Skipped already-added song: {} for playlist {}", song.getUrl(), mainPlaylist.getName());
             }
         }
-
-        // Set headers for Spotify API request
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Batch and send songs in chunks of 100
-        HttpStatusCode finalStatus = HttpStatus.OK;
-        List<List<String>> batches = partition(allUris);
-
-
-        for (int i = 0; i < batches.size(); i++) {
-            List<String> batch = batches.get(i);
-            JsonObject body = new JsonObject();
-            JsonArray uriArray = new JsonArray();
-
-            for (String uri : batch) {
-                uriArray.add(uri);
-            }
-
-            body.add("uris", uriArray);
-            HttpEntity<String> request = new HttpEntity<>(body.toString(), headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-            finalStatus = response.getStatusCode();
-
-            if (!finalStatus.is2xxSuccessful()) {
-                log.warn("Batch {} failed: {}", i + 1, response.getBody());
-            } else {
-                log.info("Batch {} uploaded successfully", i + 1);
-            }
-        }
-
-        return finalStatus;
-    }
-
-    private List<String> getAllUris(List<Song> listOfSongs) {
-        List<String> allUris = new ArrayList<>();
-        for (Song song : listOfSongs) {
-            String uri = buildSongUri(song.getUrl());
-            if (!uri.equals("Not a Track")) {
-                allUris.add(uri);
-            }
-        }
         return allUris;
     }
 
@@ -152,6 +155,7 @@ public class SpotifyApiService {
             URI songUri = new URI(songUrl);
             String path = songUri.getPath();
             if (!path.startsWith("/track/")) {
+                log.error("Not a track for: {}", path);
                 return "Not a Track";
             }
             String trackId = path.split("/")[2];// Extracts the track ID
@@ -162,7 +166,7 @@ public class SpotifyApiService {
         }
     }
 
-    private Platform getSpotifyPLatform(){
+    private Platform getSpotifyPlatform(){
         return platformRepository.getReferenceById(1L);
     }
 

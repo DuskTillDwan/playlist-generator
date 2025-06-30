@@ -1,4 +1,4 @@
-package com.dusktildwan.spotifyservice;
+package com.dusktildwan.spotifyservice.config;
 
 import lombok.Getter;
 import lombok.Setter;

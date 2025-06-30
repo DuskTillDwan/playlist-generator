@@ -1,7 +1,7 @@
 plugins {
     java
     id("java-library")
-    id("io.spring.dependency-management") version "1.1.7"
+    id("io.spring.dependency-management")
 }
 
 group = "com.dusktildwan"
@@ -37,4 +37,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
