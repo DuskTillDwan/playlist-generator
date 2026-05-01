@@ -1,6 +1,8 @@
 package com.dusktildwan.common.DAL.entities.users;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +15,12 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class PlaylistCollaboratorId implements Serializable {
+    @Column(name = "playlist_id")
     private Long playlistId;
+
+    @Column(name = "user_id")
     private Long userId;
 
     @Override

@@ -10,22 +10,18 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@IdClass(PlaylistCollaboratorId.class)
 public class PlaylistCollaborator {
-    @Id
-    @Column(name = "playlist_id")
-    private Long playlistId;
+    @EmbeddedId
+    PlaylistCollaboratorId playlistCollaboratorId;
 
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
-
-    @ManyToOne
-    @JoinColumn(name = "playlist_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("playlistId")
+    @JoinColumn(name = "playlist_id", nullable = false)
     private Playlist playlist;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("userId")
+    @JoinColumn(name = "user_id", nullable = false)
     private ChatMember chatMember;
 
 }

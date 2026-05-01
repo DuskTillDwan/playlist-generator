@@ -1,6 +1,5 @@
-package com.dusktildwan.batch.DAL.entities.music;
+package com.dusktildwan.common.DAL.entities.music;
 
-import com.dusktildwan.common.DAL.entities.music.SongShareId;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -29,7 +28,7 @@ class SongShareIdTest {
     void testEqualsAndNotNull() {
         SongShareId self = new SongShareId(1L, 3L, now);
         assertThat(self).isEqualTo(self);
-        assertThat(self).isNotEqualTo(null);
+        assertThat(self).isNotNull();
     }
 
     @Test

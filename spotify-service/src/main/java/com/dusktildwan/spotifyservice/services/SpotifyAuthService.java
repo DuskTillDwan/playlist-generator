@@ -1,6 +1,6 @@
 package com.dusktildwan.spotifyservice.services;
 
-import com.dusktildwan.spotifyservice.SpotifyConfig;
+import com.dusktildwan.spotifyservice.config.SpotifyConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.Getter;

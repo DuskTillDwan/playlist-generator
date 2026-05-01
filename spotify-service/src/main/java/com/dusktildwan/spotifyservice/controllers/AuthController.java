@@ -2,8 +2,10 @@ package com.dusktildwan.spotifyservice.controllers;
 
 import com.dusktildwan.spotifyservice.services.SpotifyAuthService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,13 +13,12 @@ import java.io.IOException;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/spotify")
 public class AuthController {
 
     private final SpotifyAuthService spotifyAuthService;
 
-    public AuthController(SpotifyAuthService spotifyAuthService) {
-        this.spotifyAuthService = spotifyAuthService;
-    }
     @GetMapping("/login")
     public void login(HttpServletResponse response) throws IOException {
         response.sendRedirect(spotifyAuthService.authTokenUrl());
